@@ -13,33 +13,55 @@ import android.widget.TextView;
 import com.oreilly.demo.android.pa.clientserver.client.R;
 
 public class Settings extends Activity {
-	private final Handler saveHandler 				= new Handler() { public void handleMessage(Message msg) { save(); }};
+
+	private final Handler saveHandler = new Handler() {
+
+		public void handleMessage(Message msg) {
+			save();
+		}
+
+	};
 
 	public final Button.OnClickListener save = new Button.OnClickListener() {
-        public void onClick(View v) {
-        	saveHandler.sendEmptyMessage(0);
-        }
+
+		public void onClick(View v) {
+			saveHandler.sendEmptyMessage(0);
+		}
+
 	};
 
 	@Override
-	 public void onCreate(Bundle savedInstanceState) {
-		 super.onCreate(savedInstanceState);
-	     setContentView(R.layout.settings);
+	public void onCreate(Bundle savedInstanceState) {
 
-	     setup();
-	 }
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.settings);
 
-	 private void setup() {
-		 ((TextView) findViewById(R.id.host)).setText(NetworkUtil.hosturl != null ? NetworkUtil.hosturl : getString(R.string.baseurl));
+		setup();
 
-		 findViewById(R.id.save).setOnClickListener(save);
-	 }
+	}
 
-	 private void save() {
-		 Editable e = ((EditText) findViewById(R.id.host)).getText();
-		 if(e == null || e.toString() == null || e.toString().trim().length() == 0) NetworkUtil.hosturl = null;
-		 else NetworkUtil.hosturl = e.toString().trim();
+	private void setup() {
 
-		 finish();
-	 }
+		((TextView) findViewById(R.id.host))
+				.setText(NetworkUtil.hosturl != null ? NetworkUtil.hosturl
+						: getString(R.string.baseurl));
+
+		findViewById(R.id.save).setOnClickListener(save);
+
+	}
+
+	private void save() {
+
+		Editable e = ((EditText) findViewById(R.id.host)).getText();
+
+		if (e == null || e.toString() == null
+				|| e.toString().trim().length() == 0)
+			NetworkUtil.hosturl = null;
+		else
+			NetworkUtil.hosturl = e.toString().trim();
+
+		finish();
+
+	}
+
 }

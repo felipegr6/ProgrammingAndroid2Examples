@@ -19,91 +19,111 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.oreilly.demo.android.pa.clientserver.client.R;
 
 public class AccountActivity extends Activity {
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.account);
 
-        setupView();
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
 
-    private void setupView() {
-    	findViewById(R.id.add).setOnClickListener(new OnClickListener() {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.account);
+
+		setupView();
+
+	}
+
+	private void setupView() {
+
+		findViewById(R.id.add).setOnClickListener(new OnClickListener() {
+
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(getBaseContext(), AccountAddActivity.class));
+
+				startActivity(new Intent(getBaseContext(),
+						AccountAddActivity.class));
+
 			}
+
 		});
 
-    	ListView contactlist = (ListView) findViewById(R.id.contactlist);
+		ListView contactlist = (ListView) findViewById(R.id.contactlist);
 
-    	final Cursor cursor = getContacts();
+		final Cursor cursor = getContacts();
 
-    	contactlist.setOnItemClickListener(new OnItemClickListener() {
+		contactlist.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
-													final int position, long id) {
+					final int position, long id) {
+
 				cursor.moveToPosition(position);
 				final String name = cursor.getString(2);
-				AlertDialog.Builder builder = new AlertDialog.Builder(AccountActivity.this);
-				builder.setTitle("Delete "+name+"?");
-				builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if(dialog != null) dialog.dismiss();
-					}
-				});
-				builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if(dialog != null) dialog.dismiss();
-						deleteContact(cursor, position);
-						setupView();
-					}
-				});
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						AccountActivity.this);
+				builder.setTitle("Delete " + name + "?");
+				builder.setNegativeButton("No",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								if (dialog != null)
+									dialog.dismiss();
+							}
+						});
+
+				builder.setPositiveButton("Yes",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								if (dialog != null)
+									dialog.dismiss();
+								deleteContact(cursor, position);
+								setupView();
+							}
+						});
+
 				builder.create().show();
+
 			}
 
-    	});
+		});
 
+		String[] fields = new String[] { ContactsContract.Data.DISPLAY_NAME };
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
+				R.layout.contact, cursor, fields, new int[] { R.id.name });
+		contactlist.setAdapter(adapter);
 
-        String[] fields = new String[] {
-                ContactsContract.Data.DISPLAY_NAME
-        };
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
-        													R.layout.contact,
-        													cursor,
-        													fields,
-        													new int[] {R.id.name});
-        contactlist.setAdapter(adapter);
-    }
+	}
 
-    private Cursor getContacts() {
-        Uri uri = ContactsContract.Contacts.CONTENT_URI;
+	private Cursor getContacts() {
 
-        String[] projection = new String[] {
-                ContactsContract.Contacts._ID,
-                ContactsContract.Contacts.LOOKUP_KEY,
-                ContactsContract.Contacts.DISPLAY_NAME
-        };
+		Uri uri = ContactsContract.Contacts.CONTENT_URI;
 
-        String selection = null;
-        String[] selectionArgs = null;
-        String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
+		String[] projection = new String[] { ContactsContract.Contacts._ID,
+				ContactsContract.Contacts.LOOKUP_KEY,
+				ContactsContract.Contacts.DISPLAY_NAME };
 
-        return managedQuery(uri, projection, selection, selectionArgs, sortOrder);
-    }
+		String selection = null;
+		String[] selectionArgs = null;
+		String sortOrder = ContactsContract.Contacts.DISPLAY_NAME
+				+ " COLLATE LOCALIZED ASC";
 
-    private void deleteContact(Cursor cursor, int position) {
-    	cursor.moveToPosition(position);
-    	long id = cursor.getLong(0);
-    	String lookupkey = cursor.getString(1);
-    	Uri uri = ContactsContract.Contacts.getLookupUri(id, lookupkey);
+		return managedQuery(uri, projection, selection, selectionArgs,
+				sortOrder);
 
-    	String[] selectionArgs = null;
-    	String where = null;
-    	ContentResolver cr = getContentResolver();
-    	cr.delete(uri, where, selectionArgs);
-    }
+	}
+
+	private void deleteContact(Cursor cursor, int position) {
+
+		cursor.moveToPosition(position);
+		long id = cursor.getLong(0);
+		String lookupkey = cursor.getString(1);
+		Uri uri = ContactsContract.Contacts.getLookupUri(id, lookupkey);
+
+		String[] selectionArgs = null;
+		String where = null;
+		ContentResolver cr = getContentResolver();
+		cr.delete(uri, where, selectionArgs);
+
+	}
+
 }
